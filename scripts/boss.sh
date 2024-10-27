@@ -1,6 +1,6 @@
 
 WAF_EXE='/Users/redwan/CppDev/limbo/build/exp/boss2/boss2'
-CMAKE_EXE='./boss'
+CMAKE_EXE='../build/boss'
 # Parse command line options
 # Check if an argument was passed to the script
 if [ "$#" -eq 0 ]; then
