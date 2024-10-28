@@ -44,7 +44,6 @@ namespace oc = ompl::control;
          KinematicCarModel(const oc::SpaceInformationPtr &si, ParamPtr param) : oc::StatePropagator(si), param_(param)
          {
              space_     = si->getStateSpace();
-             carLength_ = 0.2;
              timeStep_  = param->get_param<double>("dt");
          }
   
@@ -79,12 +78,20 @@ namespace oc = ompl::control;
             return -max_yawrate + 2.0 * max_yawrate * w;
         }
 
+        double scaleVelocity(double v) const
+        {
+             double max_v = param_->get_param<double>("max_speed");
+             double min_v = param_->get_param<double>("min_speed");
+            return min_v + (max_v - min_v) * v;
+        }
+
         void ode(const ob::State *state, const oc::Control *control, std::valarray<double> &dstate) const
         {
-            const double *u = control->as<oc::RealVectorControlSpace::ControlType>()->values;
+            double *u = control->as<oc::RealVectorControlSpace::ControlType>()->values;
             double theta = state->as<ob::SE2StateSpace::StateType>()->getYaw();
 
             dstate.resize(3);
+            u[0] = scaleVelocity(u[0]);
             dstate[2] = scaleYawRate(u[1]);
             theta += dstate[2] * timeStep_;
             theta = fmod(theta + M_PI, 2 * M_PI) - M_PI;
@@ -105,7 +112,6 @@ namespace oc = ompl::control;
          }
   
          ob::StateSpacePtr        space_;
-         double                   carLength_;
          double                   timeStep_;
          ParamPtr                 param_;  
  };

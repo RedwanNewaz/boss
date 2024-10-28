@@ -23,10 +23,14 @@ include_directories(
 link_directories(/usr/local/lib)
 
 # Create the executable
-add_executable(ompl_bow ompl_bow.cpp)
+add_executable(ompl_bow ompl_bow.cpp
+        include/pch.h
+        src/MotionPlanner.cpp
+        include/MotionPlanner.h
+)
 
 # Set precompiled header
-
+target_precompile_headers(ompl_bow PRIVATE include/pch.h)
 
 # Link libraries
 target_link_libraries(ompl_bow PUBLIC

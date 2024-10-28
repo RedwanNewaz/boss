@@ -1,9 +1,22 @@
-#include "planner_interface.h"
+#include "MotionPlanner.h"
 #include <boost/program_options.hpp>
-
-
-
 using namespace boost::program_options;
+typedef std::vector<double> VEC;
+
+void execute(ParamPtr param, const VEC& start, const VEC& goal, const VEC& boundary, bool verbose)
+{
+    //configure collision cheker
+    std::vector<std::vector<float>> obstacles;
+    float robot_radius = param->get_param<float>("robot_radius");
+    float obstacle_length = param->get_param<float>("obstacle_length");
+    param->get_obstacles(obstacles);
+    auto cc = std::make_shared<CollisionChecker>(obstacles, robot_radius, obstacle_length);
+
+    auto lower = *std::min_element(boundary.begin(), boundary.end()) - 1.0;
+    auto upper = *std::max_element(boundary.begin(), boundary.end()) + 1.0;
+    MotionPlanner planner(cc, param, lower, upper, verbose);
+    planner.plan(start, goal);
+}
 
 
 int main(int argc, char *argv[])
@@ -12,7 +25,7 @@ int main(int argc, char *argv[])
     options_description desc("Options");
     desc.add_options()
         ("help,h", "Help screen")
-        ("config", value<std::string>()->default_value("cbo_param.yaml"), "bow config yaml file")
+        ("config", value<std::string>()->default_value("../test/cbo_param.yaml"), "bow config yaml file")
         ("verbose", value<bool>()->default_value(false), "verbose output");
 
     variables_map vm;
@@ -24,14 +37,9 @@ int main(int argc, char *argv[])
         std::cout << desc << std::endl;
         return 1;
     }
-
     bool verbose = vm["verbose"].as<bool>();
-
-   
     std::cout << "\nVerbose: " << (verbose ? "true" : "false") << std::endl;
 
-
-    
      // Read start and goal locations 
     auto param = std::make_shared<param_manager2>(vm["config"].as<std::string>());
     std::vector<double> start, goal, boundary; 
@@ -49,17 +57,7 @@ int main(int argc, char *argv[])
         boundary.push_back(g);
     }
 
-   //configure collision cheker 
-   std::vector<std::vector<float>> obstacles;
-   float robot_radius = param->get_param<float>("robot_radius");
-   float obstacle_length = param->get_param<float>("obstacle_length");
-   param->get_obstacles(obstacles);
-   auto cc = std::make_shared<CollisionChecker>(obstacles, robot_radius, obstacle_length);
-   
-   auto lower = *std::min_element(boundary.begin(), boundary.end()) - 1.0;
-   auto upper = *std::max_element(boundary.begin(), boundary.end()) + 1.0;
-   PlannerInterface planner(cc, lower, upper, param);
-   planner.plan(start, goal);
+    execute(param, start, goal, boundary, verbose);
    
    return 0;
 }
