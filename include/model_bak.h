@@ -49,22 +49,27 @@ namespace oc = ompl::control;
   
          void propagate(const ob::State *state, const oc::Control* control, const double duration, ob::State *result) const override
          {
-//             std::cout << "KinematicCarModel" << std::endl;
-             EulerIntegration(state, control, duration * timeStep_, result);
+             std::cout << "KinematicCarModel" << std::endl;
+             EulerIntegration(state, control, duration, result);
          }
   
      protected:
          // Explicit Euler Method for numerical integration.
         void EulerIntegration(const ob::State *start, const oc::Control *control, const double duration, ob::State *result) const
         {
-            double t = 0;
+            double t = timeStep_;
             std::valarray<double> dstate;
             space_->copyState(result, start);
-            while (t < duration)
+            while (t < duration + std::numeric_limits<double>::epsilon())
             {
                 ode(result, control, dstate);
                 update(result, timeStep_ * dstate);
                 t += timeStep_;
+            }
+            if (t + std::numeric_limits<double>::epsilon() > duration)
+            {
+                ode(result, control, dstate);
+                update(result, (t - duration) * dstate);
             }
         }
 

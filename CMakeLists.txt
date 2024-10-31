@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(ompl_bow)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic -fdiagnostics-color -O3 -g -march=native)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
@@ -11,6 +14,10 @@ find_package(Eigen3 REQUIRED)
 find_package(YAML-CPP REQUIRED)
 find_package(FCL REQUIRED)
 find_package(CCD REQUIRED)
+find_package(LibCMAES REQUIRED)
+find_package(NLopt REQUIRED)
+
+
 
 # Set include directories
 include_directories(
@@ -27,6 +34,8 @@ add_executable(ompl_bow ompl_bow.cpp
         include/pch.h
         src/MotionPlanner.cpp
         include/MotionPlanner.h
+        src/Boss.cpp
+        src/Boss.h
 )
 
 # Set precompiled header
@@ -36,6 +45,8 @@ target_precompile_headers(ompl_bow PRIVATE include/pch.h)
 target_link_libraries(ompl_bow PUBLIC
     ${Boost_LIBRARIES}
     Eigen3::Eigen
+    LibCMAES::LibCMAES
+    NLopt::NLopt
     -lompl
     yaml-cpp::yaml-cpp
     fcl

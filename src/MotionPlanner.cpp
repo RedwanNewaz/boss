@@ -44,11 +44,13 @@ void MotionPlanner::plan(std::vector<double> start_pos, std::vector<double> goal
 
     // define a simple setup class
     oc::SimpleSetup ss(cspace);
+    auto si = ss.getSpaceInformation();
+    ob::PlannerPtr planner(new oc::Boss(si, _param));
+    ss.setPlanner(planner);
+    ss.getProblemDefinition()->setOptimizationObjective(getPathLengthObjective(si));
 
-    // set state validity checking for this space
-    oc::SpaceInformation *si = ss.getSpaceInformation().get();
     ss.setStateValidityChecker(
-            [&](const ob::State *state) { return this->isStateValid(si, state); });
+            [&](const ob::State *state) { return this->isStateValid(si.get(), state); });
 
     // Setting the propagation routine for this space:
     // KinematicCarModel does NOT use ODESolver
@@ -61,7 +63,7 @@ void MotionPlanner::plan(std::vector<double> start_pos, std::vector<double> goal
 }
 
 void MotionPlanner::m_findSolution(oc::SimpleSetup &ss) const {
-    ob::PlannerStatus solved = ss.solve(2);
+    ob::PlannerStatus solved = ss.solve(_param->get_param<double>("predict_time"));
 
     if (solved)
     {
