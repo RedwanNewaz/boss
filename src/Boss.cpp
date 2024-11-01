@@ -55,10 +55,10 @@ ompl::base::PlannerStatus ompl::control::Boss::solve(const ompl::base::PlannerTe
     using Stat_t = boost::fusion::vector<stat::Samples<Params>,
     stat::BestObservations<Params>,
             stat::AggregatedObservations<Params>>;
-     using Mean_t = mean::Constant<Params>;
-     using Kernel_t = kernel::Exp<Params>;
-//    using Mean_t = mean::Data<Params>;
-//    using Kernel_t = kernel::SquaredExpARD<Params>;
+     // using Mean_t = mean::Constant<Params>;
+     // using Kernel_t = kernel::Exp<Params>;
+    using Mean_t = mean::Data<Params>;
+    using Kernel_t = kernel::SquaredExpARD<Params>;
     using GP_t = model::GP<Params, Kernel_t, Mean_t>;
     using Constrained_GP_t = model::GP<Params, Kernel_t, Mean_t>;
 
@@ -132,4 +132,14 @@ void ompl::control::Boss::setup(void) {
 
 }
 
+
+std::vector<ompl::base::State *> ompl::control::Boss::getTraj(base::State * xstate, Control * control) const
+{
+    double pred_time = _param->get_param<double>("predict_time");
+    double dt = _param->get_param<double>("dt");
+    unsigned int cd = static_cast<int>(pred_time / dt);
+    std::vector<base::State *> pstates;
+    cd = siC_->propagateWhileValid(xstate, control, cd, pstates, true);
+    return pstates;
+}
 

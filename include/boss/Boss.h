@@ -12,6 +12,7 @@
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 #include <ompl/tools/config/SelfConfig.h>
 #include <ompl/control/SpaceInformation.h>
+#include <algorithm>
 #include "boss/bo_param.h"
 #include "param_manager2.h"
 #include "pch.h"
@@ -52,14 +53,17 @@ namespace ompl{
                 return xstate;
             }
 
-            std::vector<base::State *> getTraj(base::State * xstate, Control * control)const
+            std::vector<base::State *> getTraj(base::State * xstate, Control * control)const;
+
+
+
+            std::pair<bool, double> evalValidTraj(const std::vector<base::State *>& traj) const
             {
-                std::vector<base::State *> pstates;
-                double pred_time = _param->get_param<double>("predict_time");
-                double dt = _param->get_param<double>("dt");
-                unsigned int cd = static_cast<int>(pred_time / dt);
-                cd = siC_->propagateWhileValid(xstate, control, cd, pstates, true);
-                return pstates;
+                if (traj.size() < 1)
+                    return std::make_pair(false,10e7);
+
+                double cost = si_->distance(_goalState, traj.back());
+                return std::make_pair(true,cost);
             }
 
             Eigen::VectorXd operator()(const Eigen::VectorXd& u) const
@@ -70,12 +74,9 @@ namespace ompl{
                 si_->copyState(xstate, _currentState);
                 auto control = getControl(u);
                 auto pstates = getTraj(xstate, control);
-                int N = pstates.size() - 1;
-                xstate = pstates[N];
 
-//                base::State * xstate = predict(u);
-                bool valid = validityChecker_->isValid(xstate);
-                double cost = si_->distance(_goalState, xstate);
+
+                auto [valid, cost] = evalValidTraj(pstates);
                 res(0) = exp(-cost);
                 res(1) = valid ? 1.0: 0.0;
 
@@ -94,7 +95,7 @@ namespace ompl{
             base::OptimizationObjectivePtr opt_;
             base::StateValidityCheckerPtr validityChecker_;
             base::State *_currentState, *_goalState;
-        /** \brief The base::SpaceInformation cast as control::SpaceInformation, for convenience */
+            /** \brief The base::SpaceInformation cast as control::SpaceInformation, for convenience */
             const control::SpaceInformation *siC_;
 
 

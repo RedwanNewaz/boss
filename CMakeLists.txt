@@ -35,7 +35,7 @@ add_executable(ompl_bow ompl_bow.cpp
         src/MotionPlanner.cpp
         include/MotionPlanner.h
         src/Boss.cpp
-        src/Boss.h
+        include/boss/Boss.h
 )
 
 # Set precompiled header
