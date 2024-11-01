@@ -20,6 +20,7 @@
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 #include <ompl/control/ODESolver.h>
+#include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/config.h>
 #include <valarray>
 #include <limits>

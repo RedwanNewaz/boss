@@ -10,7 +10,7 @@
 #define DEBUG(x) std::cout << x << std::endl
 
 class param_manager2;
-typedef std::shared_ptr<param_manager2> ParamPtr2;
+typedef std::shared_ptr<param_manager2> ParamPtr;
 
 
 struct Matrix2D {

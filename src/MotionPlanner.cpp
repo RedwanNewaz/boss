@@ -44,11 +44,13 @@ void MotionPlanner::plan(std::vector<double> start_pos, std::vector<double> goal
 
     // define a simple setup class
     oc::SimpleSetup ss(cspace);
+    auto si = ss.getSpaceInformation();
+    ob::PlannerPtr planner(new oc::RRT(si));
+    ss.setPlanner(planner);
 
     // set state validity checking for this space
-    oc::SpaceInformation *si = ss.getSpaceInformation().get();
     ss.setStateValidityChecker(
-            [&](const ob::State *state) { return this->isStateValid(si, state); });
+            [&](const ob::State *state) { return this->isStateValid(si.get(), state); });
 
     // Setting the propagation routine for this space:
     // KinematicCarModel does NOT use ODESolver

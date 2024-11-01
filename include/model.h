@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <memory>
 #include <iostream>
 #include <array>
@@ -12,7 +12,7 @@
 #include <ompl/base/spaces/RealVectorBounds.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
-#include <ompl/geometric/planners/rrt/RRTstar.h>
+
 
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
@@ -21,7 +21,7 @@
 
 #include "param_manager2.h"
 
-typedef std::shared_ptr<param_manager2>  ParamPtr;
+
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 namespace oc = ompl::control;
@@ -30,13 +30,13 @@ namespace oc = ompl::control;
   class UnicycleControlSpace : public oc::RealVectorControlSpace
  {
  public:
-  
+
      UnicycleControlSpace(const ob::StateSpacePtr &stateSpace) : oc::RealVectorControlSpace(stateSpace, 2)
      {
      }
  };
 
-  
+
  // Kinematic car model object definition.  This class does NOT use ODESolver to propagate the system.
  class KinematicCarModel : public oc::StatePropagator
  {
@@ -46,29 +46,25 @@ namespace oc = ompl::control;
              space_     = si->getStateSpace();
              timeStep_  = param->get_param<double>("dt");
          }
-  
+
          void propagate(const ob::State *state, const oc::Control* control, const double duration, ob::State *result) const override
          {
-             EulerIntegration(state, control, duration, result);
+//             std::cout << "KinematicCarModel" << std::endl;
+             EulerIntegration(state, control, duration * timeStep_, result);
          }
-  
+
      protected:
          // Explicit Euler Method for numerical integration.
         void EulerIntegration(const ob::State *start, const oc::Control *control, const double duration, ob::State *result) const
         {
-            double t = timeStep_;
+            double t = 0;
             std::valarray<double> dstate;
             space_->copyState(result, start);
-            while (t < duration + std::numeric_limits<double>::epsilon())
+            while (t < duration)
             {
                 ode(result, control, dstate);
                 update(result, timeStep_ * dstate);
                 t += timeStep_;
-            }
-            if (t + std::numeric_limits<double>::epsilon() > duration)
-            {
-                ode(result, control, dstate);
-                update(result, (t - duration) * dstate);
             }
         }
 
@@ -97,9 +93,9 @@ namespace oc = ompl::control;
             theta = fmod(theta + M_PI, 2 * M_PI) - M_PI;
             dstate[0] = u[0] * cos(theta);
             dstate[1] = u[0] * sin(theta);
-            
+
         }
-  
+
          void update(ob::State *state, const std::valarray<double> &dstate) const
          {
              ob::SE2StateSpace::StateType &s = *state->as<ob::SE2StateSpace::StateType>();
@@ -110,9 +106,8 @@ namespace oc = ompl::control;
              s.setYaw(yaw);
              space_->enforceBounds(state);
          }
-  
+
          ob::StateSpacePtr        space_;
          double                   timeStep_;
-         ParamPtr                 param_;  
+         ParamPtr                 param_;
  };
-  

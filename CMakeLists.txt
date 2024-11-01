@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(ompl_bow)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic -fdiagnostics-color -O3 -g -march=native)
+endif()
+
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
