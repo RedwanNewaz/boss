@@ -29,4 +29,18 @@
 #include <memory>
 #include <fstream>
 #include <sstream>
+
+
+#define USE_NLOPT
+#include <limbo/acqui/gp_ucb.hpp>
+#include <limbo/kernel/exp.hpp>
+#include <limbo/mean/data.hpp>
+#include <limbo/model/gp.hpp>
+#include <limbo/tools/macros.hpp>
+#include <limbo/stat.hpp>
+#include <limbo/bayes_opt/boptimizer.hpp>
+
+#include <limbo/experimental/acqui/eci.hpp>
+#include <limbo/experimental/bayes_opt/cboptimizer.hpp>
+
 #endif //OMPL_BOW_PCH_H

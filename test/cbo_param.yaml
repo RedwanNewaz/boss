@@ -5,11 +5,11 @@ max_accel: 0.2
 max_dyawrate: 0.00174532925 #2.0472
 
 dt: 0.1
-predict_time: 2.0 #1.85
+predict_time: 3.0 #1.85
 
 goal_radius: 0.3
 robot_radius: 0.345
-obstacle_length: 0.27
+obstacle_length: 0.1
 v_reso: 0.01
 yawrate_reso: 0.001745329
 

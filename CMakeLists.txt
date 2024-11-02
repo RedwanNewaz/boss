@@ -15,6 +15,8 @@ find_package(Eigen3 REQUIRED)
 find_package(YAML-CPP REQUIRED)
 find_package(FCL REQUIRED)
 find_package(CCD REQUIRED)
+find_package(LibCMAES REQUIRED)
+find_package(NLopt REQUIRED)
 
 # Set include directories
 include_directories(
@@ -22,6 +24,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     /opt/local/include
     /usr/local/include/ompl-1.6
+    ThirdParty/limbo/src
 )
 
 link_directories(/usr/local/lib)
@@ -39,6 +42,7 @@ add_executable(ompl_bow ompl_bow.cpp
         include/Koules/KoulesStateSpace.h
         src/KoulesStateSpace.cpp
         include/Koules/KoulesProjection.h
+        include/cbo/CboConfig.h
 )
 
 # Set precompiled header
@@ -48,6 +52,8 @@ target_precompile_headers(ompl_bow PRIVATE include/pch.h)
 target_link_libraries(ompl_bow PUBLIC
     ${Boost_LIBRARIES}
     Eigen3::Eigen
+    LibCMAES::LibCMAES
+    NLopt::NLopt
     -lompl
     yaml-cpp::yaml-cpp
     fcl

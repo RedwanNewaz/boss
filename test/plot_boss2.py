@@ -16,7 +16,7 @@ def main(csv_file="../build/output.csv", env_file="cbo_param.yaml"):
     for ob in env['obstacles']:
         c = Circle(ob, 0.456)
         ax.add_patch(c)
-    plt.show()
+    plt.savefig('output.png')
 
 
 if __name__ == "__main__":
