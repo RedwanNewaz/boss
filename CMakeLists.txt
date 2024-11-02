@@ -31,6 +31,14 @@ add_executable(ompl_bow ompl_bow.cpp
         include/pch.h
         src/MotionPlanner.cpp
         include/MotionPlanner.h
+        src/CboDirectedControlSampler.cpp
+        include/CboDirectedControlSampler.h
+        src/KoulesControlSpace.cpp
+        include/Koules/KoulesControlSpace.h
+        include/Koules/KoulesConfig.h
+        include/Koules/KoulesStateSpace.h
+        src/KoulesStateSpace.cpp
+        include/Koules/KoulesProjection.h
 )
 
 # Set precompiled header

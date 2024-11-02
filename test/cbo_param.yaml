@@ -9,7 +9,7 @@ predict_time: 2.0 #1.85
 
 goal_radius: 0.3
 robot_radius: 0.345
-obstacle_length: 0.25
+obstacle_length: 0.27
 v_reso: 0.01
 yawrate_reso: 0.001745329
 

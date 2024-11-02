@@ -48,6 +48,16 @@ void MotionPlanner::plan(std::vector<double> start_pos, std::vector<double> goal
     ob::PlannerPtr planner(new oc::RRT(si));
     ss.setPlanner(planner);
 
+    bool isPDST = true;
+
+    si->setDirectedControlSamplerAllocator(
+        [&](const ompl::control::SpaceInformation *si)
+        {
+            return CboDirectedControlSamplerAllocator(si,  ss.getProblemDefinition()->getGoal(), isPDST);
+        });
+
+
+
     // set state validity checking for this space
     ss.setStateValidityChecker(
             [&](const ob::State *state) { return this->isStateValid(si.get(), state); });

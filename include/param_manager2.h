@@ -21,8 +21,8 @@ struct Matrix2D {
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Matrix2D &d) {
-        for (int i = 0; i < d.data.size(); ++i) {
-            for (int j = 0; j < d.data[0].size(); ++j) {
+        for (uint i = 0; i < d.data.size(); ++i) {
+            for (uint j = 0; j < d.data[0].size(); ++j) {
                 os << d.data[i][j] << " ";
             }
             os << "\n";

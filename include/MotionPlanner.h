@@ -7,6 +7,7 @@
 #include "pch.h"
 #include "collision_checker.h"
 #include "model.h"
+#include "CboDirectedControlSampler.h"
 
 typedef std::shared_ptr<CollisionChecker> CCPtr;
 namespace ob = ompl::base;
@@ -18,6 +19,14 @@ class MotionPlanner {
 public:
     MotionPlanner(const CCPtr &cc, const ParamPtr &param, double lower, double upper, bool verbose=true);
     void plan(std::vector<double> start_pos, std::vector<double> goal_pos, double timeout=5.0);
+
+
+    ompl::control::DirectedControlSamplerPtr CboDirectedControlSamplerAllocator(
+    const ompl::control::SpaceInformation *si, const ompl::base::GoalPtr &goal, bool propagateMax)
+    {
+        return std::make_shared<CboDirectedControlSampler>(si, goal, propagateMax);
+    }
+
 
 protected:
     void save_results(const std::stringstream& ss) const;
